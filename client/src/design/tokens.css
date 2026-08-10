@@ -1,0 +1,32 @@
+:root {
+  /* Color palette matching background_faded.png */
+  --color-primary: #0284c7; /* Electric Cyan Blue */
+  --color-primary-hover: #0369a1;
+  --color-accent: #38bdf8; /* Bright Cyan Glow */
+  --color-accent-amber: #fbbf24; /* Warm Ambient Glow */
+  --color-accent-purple: #c084fc; /* Cosmic Violet Glow */
+  --color-bg: #060913; /* Deep Cosmic Midnight */
+  
+  --color-bg-overlay: rgba(6, 9, 19, 0.55); /* Translucent dark cyan overlay */
+  --color-text: #f8fafc; /* Pure Crisp White */
+  --color-text-muted: #cbd5e1; /* Light Slate Silver */
+  --color-text-dim: #94a3b8; /* Muted Slate */
+
+  /* Spacing */
+  --space-xs: 0.4rem;
+  --space-sm: 0.8rem;
+  --space-md: 1.6rem;
+  --space-lg: 2.4rem;
+  --space-xl: 3.2rem;
+
+  /* Font */
+  --font-head: 'Playfair Display', serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-size-base: 1rem;
+
+  /* Glassmorphism tuned to Cyan/Midnight backdrop */
+  --glass-bg: rgba(10, 20, 40, 0.65);
+  --glass-border: rgba(56, 189, 248, 0.25);
+  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(6, 182, 212, 0.15);
+}
+

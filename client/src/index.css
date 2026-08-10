@@ -1,0 +1,75 @@
+@import './design/global.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans antialiased text-slate-100 bg-bgDark;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-semibold text-white;
+  }
+  input, textarea, select {
+    background-color: rgba(6, 15, 30, 0.75);
+    color: #f8fafc;
+    border-color: rgba(56, 189, 248, 0.25);
+  }
+  input[type="date"], 
+  input[type="time"],
+  input[type="datetime-local"] {
+    color-scheme: dark !important;
+    color: #ffffff !important;
+    accent-color: #38bdf8 !important;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: brightness(0) invert(1) !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+    width: 20px;
+    height: 20px;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator:hover,
+  input[type="time"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 0.8 !important;
+  }
+  input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+  input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+    color: #ffffff !important;
+  }
+  input[type="date"]::-webkit-datetime-edit-text,
+  input[type="date"]::-webkit-datetime-edit-month-field,
+  input[type="date"]::-webkit-datetime-edit-day-field,
+  input[type="date"]::-webkit-datetime-edit-year-field,
+  input[type="time"]::-webkit-datetime-edit-text,
+  input[type="time"]::-webkit-datetime-edit-hour-field,
+  input[type="time"]::-webkit-datetime-edit-minute-field,
+  input[type="time"]::-webkit-datetime-edit-ampm-field {
+    color: #ffffff !important;
+  }
+  input::placeholder, textarea::placeholder {
+    color: #94a3b8;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-sky-500 to-blue-600 text-white border border-sky-400/40 px-6 py-3 font-semibold tracking-wide uppercase transition-all duration-300 inline-block text-center rounded-xl hover:shadow-[0_0_25px_rgba(56,189,248,0.5)] hover:scale-[1.02];
+  }
+  .btn-secondary {
+    @apply bg-sky-950/40 text-cyan-300 border border-cyan-500/40 px-6 py-3 font-semibold tracking-wide uppercase transition-all duration-300 inline-block text-center rounded-xl hover:bg-cyan-500 hover:text-black hover:shadow-[0_0_20px_rgba(56,189,248,0.5)] hover:scale-[1.02];
+  }
+  .input-field {
+    @apply w-full px-4 py-3 bg-slate-950/60 border border-cyan-500/30 text-slate-100 rounded-xl focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_20px_rgba(56,189,248,0.3)] transition-all duration-300;
+  }
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    @apply rounded-2xl;
+  }
+}
