@@ -1,5 +1,6 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
+const axios = require("axios");
 const router = express.Router();
 
 router.post("/send", async (req, res) => {
@@ -10,12 +11,48 @@ router.post("/send", async (req, res) => {
       return res.status(400).json({ message: "Please fill in all fields." });
     }
 
-    const smtpUser = process.env.BREVO_SMTP_USER || process.env.EMAIL_USER;
-    const smtpPass = process.env.BREVO_SMTP_PASS || process.env.EMAIL_PASS;
+    const senderEmail = process.env.BREVO_SMTP_USER || process.env.EMAIL_USER;
+    const key = process.env.BREVO_API_KEY || process.env.BREVO_SMTP_PASS || process.env.EMAIL_PASS;
 
-    if (!smtpUser || !smtpPass) {
-      console.log("Contact message received (no BREVO_SMTP_USER/BREVO_SMTP_PASS):", { name, email, message });
+    if (!senderEmail || !key) {
+      console.log("Contact message received (no Brevo credentials):", { name, email, message });
       return res.status(200).json({ message: "Message received successfully!" });
+    }
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ca8a04; border-radius: 8px;">
+        <h2 style="color: #ca8a04;">New Contact Us Inquiry</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Message:</strong></p>
+        <blockquote style="background: #f4f4f4; padding: 10px; border-left: 4px solid #ca8a04;">
+          ${message}
+        </blockquote>
+      </div>
+    `;
+
+    if (key.startsWith("xkeysib-")) {
+      const response = await axios.post(
+        "https://api.brevo.com/v3/smtp/email",
+        {
+          sender: { name: "EduPortal Academy", email: senderEmail },
+          to: [{ email: process.env.CONTACT_EMAIL || "sahilshaw2004002@gmail.com" }],
+          replyTo: { email: email, name: name },
+          subject: `New Contact Us Message from ${name}`,
+          htmlContent: htmlContent,
+        },
+        {
+          headers: {
+            "api-key": key,
+            "Content-Type": "application/json",
+            accept: "application/json",
+          },
+          timeout: 10000,
+        }
+      );
+
+      console.log(`✅ Contact email sent via API (ID: ${response.data?.messageId})`);
+      return res.status(200).json({ message: "Message sent successfully!" });
     }
 
     const transporter = nodemailer.createTransport({
@@ -23,34 +60,25 @@ router.post("/send", async (req, res) => {
       port: 587,
       secure: false,
       auth: {
-        user: smtpUser,
-        pass: smtpPass,
+        user: senderEmail,
+        pass: key,
       },
     });
 
     const info = await transporter.sendMail({
-      from: `"EduPortal Academy" <${smtpUser}>`,
+      from: `"EduPortal Academy" <${senderEmail}>`,
       to: process.env.CONTACT_EMAIL || "sahilshaw2004002@gmail.com",
       replyTo: email,
       subject: `New Contact Us Message from ${name}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ca8a04; border-radius: 8px;">
-          <h2 style="color: #ca8a04;">New Contact Us Inquiry</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Message:</strong></p>
-          <blockquote style="background: #f4f4f4; padding: 10px; border-left: 4px solid #ca8a04;">
-            ${message}
-          </blockquote>
-        </div>
-      `,
+      html: htmlContent,
     });
 
-    console.log(`✅ Contact email sent (ID: ${info.messageId})`);
+    console.log(`✅ Contact email sent via SMTP (ID: ${info.messageId})`);
     res.status(200).json({ message: "Message sent successfully!" });
   } catch (error) {
-    console.error("Contact Form Mail Error:", error);
-    res.status(500).json({ message: "Failed to send message. Please try again later.", error: error.message });
+    const errorDetails = error.response?.data?.message || error.message;
+    console.error("Contact Form Mail Error:", errorDetails);
+    res.status(500).json({ message: "Failed to send message. Please try again later.", error: errorDetails });
   }
 });
 

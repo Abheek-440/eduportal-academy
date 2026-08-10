@@ -2,6 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const axios = require("axios");
 
 const sendOtpMail = async (email, otp) => {
   console.log(`========================================`);
@@ -10,47 +11,80 @@ const sendOtpMail = async (email, otp) => {
   console.log(`OTP Code: ${otp}`);
   console.log(`========================================`);
 
-  const smtpUser = process.env.BREVO_SMTP_USER || process.env.EMAIL_USER;
-  const smtpPass = process.env.BREVO_SMTP_PASS || process.env.EMAIL_PASS;
+  const senderEmail = process.env.BREVO_SMTP_USER || process.env.EMAIL_USER;
+  const key = process.env.BREVO_API_KEY || process.env.BREVO_SMTP_PASS || process.env.EMAIL_PASS;
 
-  if (!smtpUser || !smtpPass) {
-    const msg = "⚠️ Brevo SMTP credentials (BREVO_SMTP_USER & BREVO_SMTP_PASS) are missing in environment variables.";
+  if (!senderEmail || !key) {
+    const msg = "⚠️ Brevo credentials (BREVO_SMTP_USER & BREVO_SMTP_PASS) are missing in environment variables.";
     console.error(msg);
     throw new Error(msg);
   }
 
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 500px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px;">
+      <h2 style="color: #ca8a04; text-align: center;">EduPortal Academy</h2>
+      <p style="font-size: 16px; color: #374151;">Your OTP verification code is:</p>
+      <div style="background: #fef3c7; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+        <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #92400e;">${otp}</span>
+      </div>
+      <p style="font-size: 14px; color: #6b7280;">This code will expire in 5 minutes. Do not share it with anyone.</p>
+    </div>
+  `;
+
+  // 1. If key is Brevo API Key (xkeysib-...)
+  if (key.startsWith("xkeysib-")) {
+    try {
+      const response = await axios.post(
+        "https://api.brevo.com/v3/smtp/email",
+        {
+          sender: { name: "EduPortal Academy", email: senderEmail },
+          to: [{ email: email }],
+          subject: "OTP Verification - EduPortal Academy",
+          htmlContent: htmlContent,
+        },
+        {
+          headers: {
+            "api-key": key,
+            "Content-Type": "application/json",
+            accept: "application/json",
+          },
+          timeout: 10000,
+        }
+      );
+
+      console.log(`✅ Email sent successfully to ${email} via Brevo API (ID: ${response.data?.messageId})`);
+      return response.data;
+    } catch (err) {
+      const errorDetails = err.response?.data?.message || err.message;
+      console.error(`⚠️ Brevo API delivery failed for ${email}:`, errorDetails);
+      throw new Error(`Brevo API Error: ${errorDetails}`);
+    }
+  }
+
+  // 2. If key is Brevo SMTP Key (xsmtpsib-...) or standard SMTP pass
   try {
     const transporter = nodemailer.createTransport({
       host: "smtp-relay.brevo.com",
       port: 587,
       secure: false,
       auth: {
-        user: smtpUser,
-        pass: smtpPass,
+        user: senderEmail,
+        pass: key,
       },
     });
 
     const info = await transporter.sendMail({
-      from: `"EduPortal Academy" <${smtpUser}>`,
+      from: `"EduPortal Academy" <${senderEmail}>`,
       to: email,
       subject: "OTP Verification - EduPortal Academy",
-      html: `
-        <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 500px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px;">
-          <h2 style="color: #ca8a04; text-align: center;">EduPortal Academy</h2>
-          <p style="font-size: 16px; color: #374151;">Your OTP verification code is:</p>
-          <div style="background: #fef3c7; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
-            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #92400e;">${otp}</span>
-          </div>
-          <p style="font-size: 14px; color: #6b7280;">This code will expire in 5 minutes. Do not share it with anyone.</p>
-        </div>
-      `,
+      html: htmlContent,
     });
 
-    console.log(`✅ Email sent successfully to ${email} (ID: ${info.messageId})`);
+    console.log(`✅ Email sent successfully to ${email} via Brevo SMTP (ID: ${info.messageId})`);
     return info;
   } catch (err) {
-    console.error(`⚠️ Email delivery failed for ${email}:`, err.message);
-    throw err;
+    console.error(`⚠️ Brevo SMTP delivery failed for ${email}:`, err.message);
+    throw new Error(`Brevo SMTP Error: ${err.message}`);
   }
 };
 
