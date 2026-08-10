@@ -1,18 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
-const dns = require("dns");
-
-// Helper: resolve hostname to IPv4 address to avoid IPv6 ENETUNREACH on Render/Vercel
-const resolveIPv4 = (hostname) => {
-  return new Promise((resolve, reject) => {
-    dns.lookup(hostname, { family: 4 }, (err, address) => {
-      if (err) reject(err);
-      else resolve(address);
-    });
-  });
-};
+const { Resend } = require("resend");
 
 const sendOtpMail = async (email, otp) => {
   console.log(`========================================`);
@@ -21,44 +10,37 @@ const sendOtpMail = async (email, otp) => {
   console.log(`OTP Code: ${otp}`);
   console.log(`========================================`);
 
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.log("⚠️ EMAIL_USER or EMAIL_PASS environment variables are missing. Skipping SMTP email delivery.");
+  if (!process.env.RESEND_API_KEY) {
+    console.log("⚠️ RESEND_API_KEY environment variable is missing. Skipping email delivery.");
     return;
   }
 
   try {
-    // Resolve smtp.gmail.com to IPv4 address to prevent IPv6 connection failures
-    const smtpHost = await resolveIPv4("smtp.gmail.com");
-    console.log(`📧 Resolved smtp.gmail.com to IPv4: ${smtpHost}`);
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const transporter = nodemailer.createTransport({
-      host: smtpHost,         // Use resolved IPv4 address directly
-      port: 587,
-      secure: false, // TLS
-      requireTLS: true,
-      tls: {
-        servername: "smtp.gmail.com",  // Required for TLS certificate verification
-      },
-      auth: {
-        user: process.env.EMAIL_USER.trim(),
-        pass: process.env.EMAIL_PASS.replace(/\s+/g, ""), // Remove any accidental spaces in App Password
-      },
-      connectionTimeout: 10000,
-      socketTimeout: 10000,
-    });
-
-    await transporter.sendMail({
-      from: `"EduPortal Academy" <${process.env.EMAIL_USER}>`,
-      to: email,
+    const { data, error } = await resend.emails.send({
+      from: "EduPortal Academy <onboarding@resend.dev>",
+      to: [email],
       subject: "OTP Verification - EduPortal Academy",
-      text: `Your OTP is ${otp}. It will expire in 5 minutes.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 500px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px;">
+          <h2 style="color: #ca8a04; text-align: center;">EduPortal Academy</h2>
+          <p style="font-size: 16px; color: #374151;">Your OTP verification code is:</p>
+          <div style="background: #fef3c7; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #92400e;">${otp}</span>
+          </div>
+          <p style="font-size: 14px; color: #6b7280;">This code will expire in 5 minutes. Do not share it with anyone.</p>
+        </div>
+      `,
     });
-    console.log(`✅ Email sent successfully to ${email}`);
+
+    if (error) {
+      console.error(`⚠️ Email delivery failed for ${email}:`, error.message);
+    } else {
+      console.log(`✅ Email sent successfully to ${email} (ID: ${data.id})`);
+    }
   } catch (err) {
     console.error(`⚠️ Email delivery failed for ${email}:`, err.message);
-    if (err.message.includes("Invalid login") || err.message.includes("535")) {
-      console.error("💡 HINT: Check that EMAIL_USER matches the exact Gmail account that generated the 16-character App Password.");
-    }
   }
 };
 
