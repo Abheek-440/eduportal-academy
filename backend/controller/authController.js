@@ -4,6 +4,16 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const dns = require("dns");
 
+// Helper: resolve hostname to IPv4 address to avoid IPv6 ENETUNREACH on Render/Vercel
+const resolveIPv4 = (hostname) => {
+  return new Promise((resolve, reject) => {
+    dns.lookup(hostname, { family: 4 }, (err, address) => {
+      if (err) reject(err);
+      else resolve(address);
+    });
+  });
+};
+
 const sendOtpMail = async (email, otp) => {
   console.log(`========================================`);
   console.log(`🔑 [OTP GENERATED]`);
@@ -17,20 +27,24 @@ const sendOtpMail = async (email, otp) => {
   }
 
   try {
+    // Resolve smtp.gmail.com to IPv4 address to prevent IPv6 connection failures
+    const smtpHost = await resolveIPv4("smtp.gmail.com");
+    console.log(`📧 Resolved smtp.gmail.com to IPv4: ${smtpHost}`);
+
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
+      host: smtpHost,         // Use resolved IPv4 address directly
       port: 587,
       secure: false, // TLS
       requireTLS: true,
-      lookup: (hostname, options, callback) => {
-        dns.lookup(hostname, { family: 4 }, callback);
+      tls: {
+        servername: "smtp.gmail.com",  // Required for TLS certificate verification
       },
       auth: {
         user: process.env.EMAIL_USER.trim(),
         pass: process.env.EMAIL_PASS.replace(/\s+/g, ""), // Remove any accidental spaces in App Password
       },
-      connectionTimeout: 8000,
-      socketTimeout: 8000,
+      connectionTimeout: 10000,
+      socketTimeout: 10000,
     });
 
     await transporter.sendMail({
