@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config/apiConfig";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaBookOpen,
@@ -42,7 +43,7 @@ const InstructorDashboard = () => {
     try {
       setLoading(true);
       setError("");
-      const res = await axios.get("http://localhost:5500/api/teacher/dashboard", {
+      const res = await axios.get(`${API_BASE_URL}/api/teacher/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setData(res.data);
@@ -61,7 +62,7 @@ const InstructorDashboard = () => {
   const handleDeleteCourse = async (id) => {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
     try {
-      await axios.delete(`http://localhost:5500/api/courses/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/courses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Course deleted successfully");
@@ -74,7 +75,7 @@ const InstructorDashboard = () => {
   const handleDeleteLiveClass = async (id) => {
     if (!window.confirm("Are you sure you want to delete this live class?")) return;
     try {
-      await axios.delete(`http://localhost:5500/api/liveclasses/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/liveclasses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Live class deleted successfully");
@@ -97,7 +98,7 @@ const InstructorDashboard = () => {
     try {
       setSubmittingCert(true);
       const res = await axios.post(
-        "http://localhost:5500/api/teacher/approve-certificate",
+        `${API_BASE_URL}/api/teacher/approve-certificate`,
         {
           enrollmentId: signingEnrollment._id,
           digitalSignature: signatureInput,
@@ -119,7 +120,7 @@ const InstructorDashboard = () => {
     if (!window.confirm("Are you sure you want to revoke certificate approval for this student?")) return;
     try {
       await axios.post(
-        "http://localhost:5500/api/teacher/revoke-certificate",
+        `${API_BASE_URL}/api/teacher/revoke-certificate`,
         { enrollmentId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -378,7 +379,7 @@ const InstructorDashboard = () => {
                   <div>
                     {course.images?.[0] && (
                       <img
-                        src={`http://localhost:5500/uploads/${course.images[0]}`}
+                        src={`${API_BASE_URL}/uploads/${course.images[0]}`}
                         alt={course.title}
                         className="w-full h-44 object-cover rounded-xl mb-3"
                         onError={(e) => {

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { API_BASE_URL } from "../config/apiConfig";
 
 const CourseCard = ({ course, onDelete }) => {
   const [activeImage, setActiveImage] = useState(0);
@@ -14,7 +15,7 @@ const CourseCard = ({ course, onDelete }) => {
         <img
           src={
             course.images?.[activeImage]
-              ? `http://localhost:5500/uploads/${course.images[activeImage]}`
+              ? `${API_BASE_URL}/uploads/${course.images[activeImage]}`
               : "https://via.placeholder.com/400x200?text=No+Image+Available"
           }
           onError={(e) => {
@@ -34,7 +35,7 @@ const CourseCard = ({ course, onDelete }) => {
           {course.images.map((img, i) => (
             <img
               key={i}
-              src={`http://localhost:5500/uploads/${img}`}
+              src={`${API_BASE_URL}/uploads/${img}`}
               onMouseEnter={() => setActiveImage(i)}
               className={`w-14 h-14 rounded-md object-cover cursor-pointer border 
               ${activeImage === i ? "border-cyan-400" : "border-white/10"}`}

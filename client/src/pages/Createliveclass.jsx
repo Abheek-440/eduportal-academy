@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import { API_BASE_URL } from '../config/apiConfig';
 
 const Createliveclass = () => {
     const navigate = useNavigate();
@@ -33,7 +34,7 @@ const Createliveclass = () => {
 
     try {
       await axios.post(
-        "http://localhost:5500/api/liveclasses",
+        `${API_BASE_URL}/api/liveclasses`,
         form,
         {
           headers: {

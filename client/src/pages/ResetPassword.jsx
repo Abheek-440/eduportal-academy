@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { API_BASE_URL } from '../config/apiConfig';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const ResetPassword = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:5500/api/auth/reset-password", form);
+      const res = await axios.post(`${API_BASE_URL}/api/auth/reset-password`, form);
       alert(res.data.message);
       navigate("/login");
     } catch (err) {

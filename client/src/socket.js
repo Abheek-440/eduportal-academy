@@ -1,4 +1,6 @@
 import {io} from "socket.io-client";
-const socket = io("http://localhost:5500");
+import { API_BASE_URL } from "./config/apiConfig";
+
+const socket = io(API_BASE_URL);
 
 export default socket;

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DailyIframe from "@daily-co/daily-js";
 import axios from "axios";
+import { API_BASE_URL } from "../config/apiConfig";
 import { FaTrash } from "react-icons/fa";
 
 const JoinLiveClass = () => {
@@ -19,7 +20,7 @@ const JoinLiveClass = () => {
 
   const getClass = async () => {
     try {
-      const res = await axios.get(`http://localhost:5500/api/liveclasses/${id}`);
+      const res = await axios.get(`${API_BASE_URL}/api/liveclasses/${id}`);
       setLiveClass(res.data);
     } catch (error) {
       alert(error.response?.data?.message || "Load failed");
@@ -29,7 +30,7 @@ const JoinLiveClass = () => {
   const handleDeleteClass = async () => {
     if (!window.confirm("Are you sure you want to delete this live class link?")) return;
     try {
-      await axios.delete(`http://localhost:5500/api/liveclasses/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/liveclasses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Live class deleted successfully");

@@ -4,6 +4,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaCreditCard, FaLock, FaCheckCircle } from "react-icons/fa";
 import { loadRazorpayScript } from "../utils/loadRazorpay";
 import axios from "axios";
+import { API_BASE_URL } from "../config/apiConfig";
 
 const SingleCourse = () => {
   const { id } = useParams();
@@ -22,7 +23,7 @@ const SingleCourse = () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const dashRes = await axios.get("http://localhost:5500/api/student/dashboard", {
+          const dashRes = await axios.get(`${API_BASE_URL}/api/student/dashboard`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const enrolledList = dashRes.data?.enrolledCourses || [];
@@ -55,7 +56,7 @@ const SingleCourse = () => {
 
       // 1. Create Razorpay order on backend
       const orderRes = await axios.post(
-        "http://localhost:5500/api/payment/create-order",
+        `${API_BASE_URL}/api/payment/create-order`,
         { courseId: course._id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -91,7 +92,7 @@ const SingleCourse = () => {
           try {
             // 4. Verify payment on backend
             const verifyRes = await axios.post(
-              "http://localhost:5500/api/payment/verify-payment",
+              `${API_BASE_URL}/api/payment/verify-payment`,
               {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
@@ -174,7 +175,7 @@ const SingleCourse = () => {
             <img
               src={
                 course.images?.[activeImage]
-                  ? `http://localhost:5500/uploads/${course.images[activeImage]}`
+                  ? `${API_BASE_URL}/uploads/${course.images[activeImage]}`
                   : "https://via.placeholder.com/600x400?text=No+Image+Available"
               }
               onError={(e) => {
@@ -190,7 +191,7 @@ const SingleCourse = () => {
                 {course.images.map((img, index) => (
                   <img
                     key={index}
-                    src={`http://localhost:5500/uploads/${img}`}
+                    src={`${API_BASE_URL}/uploads/${img}`}
                     onClick={() => setActiveImage(index)}
                     className={`w-20 h-20 object-cover rounded-lg cursor-pointer border-2 transition 
                       ${

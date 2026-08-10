@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config/apiConfig";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaUserGraduate,
@@ -30,7 +31,7 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
       setError("");
-      const res = await axios.get("http://localhost:5500/api/admin/dashboard", {
+      const res = await axios.get(`${API_BASE_URL}/api/admin/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setData(res.data);
@@ -49,7 +50,7 @@ const AdminDashboard = () => {
   const handleDeleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      await axios.delete(`http://localhost:5500/api/admin/users/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/admin/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("User deleted successfully");
@@ -62,7 +63,7 @@ const AdminDashboard = () => {
   const handleDeleteLiveClass = async (id) => {
     if (!window.confirm("Are you sure you want to delete this live class link?")) return;
     try {
-      await axios.delete(`http://localhost:5500/api/liveclasses/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/liveclasses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Live class deleted successfully");
@@ -75,7 +76,7 @@ const AdminDashboard = () => {
   const handleDeleteCourse = async (id) => {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
     try {
-      await axios.delete(`http://localhost:5500/api/courses/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/courses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Course deleted successfully");
@@ -609,7 +610,7 @@ const AdminDashboard = () => {
                   <div>
                     {course.images?.[0] && (
                       <img
-                        src={`http://localhost:5500/uploads/${course.images[0]}`}
+                        src={`${API_BASE_URL}/uploads/${course.images[0]}`}
                         alt={course.title}
                         className="w-full h-40 object-cover rounded-xl mb-3"
                         onError={(e) => {

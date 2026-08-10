@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { FaFileUpload, FaRobot } from "react-icons/fa";
+import { API_BASE_URL } from "../config/apiConfig";
 
 const Atsanalyzer = () => {
   const [resume, setResume] = useState(null);
@@ -23,7 +24,7 @@ const Atsanalyzer = () => {
       setReport("");
 
       const res = await axios.post(
-        "http://localhost:5500/api/ats/analyze",
+        `${API_BASE_URL}/api/ats/analyze`,
         formData,
         {
           headers: {

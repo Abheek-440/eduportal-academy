@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/courseApi";
+import { API_BASE_URL } from "../config/apiConfig";
 import CourseForm from "../components/Courseform";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -141,7 +142,7 @@ const EditCourse = () => {
               {oldImages.map((img, index) => (
                 <img
                   key={index}
-                  src={`http://localhost:5500/uploads/${img}`}
+                  src={`${API_BASE_URL}/uploads/${img}`}
                   alt="old"
                   className="w-full h-32 object-cover rounded-lg border"
                 />

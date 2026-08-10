@@ -15,9 +15,20 @@ const app = express();
 
 connectDB();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Allow requests during production setup
+      }
+    },
     credentials: true,
   })
 );
@@ -44,7 +55,8 @@ app.use("/api/payment", require("./routes/paymentRoutes"));
 const server = http.createServer(app);
 const io = new Server(server,{
   cors:{
-    origin:"http://localhost:5173",
+    origin: "*",
+    credentials: true,
   },
 });
 sockethandeler(io);

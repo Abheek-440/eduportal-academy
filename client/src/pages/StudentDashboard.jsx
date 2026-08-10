@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config/apiConfig";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaBookOpen,
@@ -46,18 +47,18 @@ const StudentDashboard = () => {
       setLoading(true);
       setError("");
 
-      const res = await axios.get("http://localhost:5500/api/student/dashboard", {
+      const res = await axios.get(`${API_BASE_URL}/api/student/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDashboardData(res.data);
 
       // Fetch all available courses for explore catalog
-      const coursesRes = await axios.get("http://localhost:5500/api/courses");
+      const coursesRes = await axios.get(`${API_BASE_URL}/api/courses`);
       setAllCourses(coursesRes.data);
 
       // Fetch payment history
       try {
-        const payRes = await axios.get("http://localhost:5500/api/payment/history", {
+        const payRes = await axios.get(`${API_BASE_URL}/api/payment/history`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPayments(payRes.data || []);
@@ -81,7 +82,7 @@ const StudentDashboard = () => {
     try {
       setActionLoading(true);
       await axios.post(
-        "http://localhost:5500/api/student/complete",
+        `${API_BASE_URL}/api/student/complete`,
         { courseId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -98,7 +99,7 @@ const StudentDashboard = () => {
     try {
       setActionLoading(true);
       await axios.post(
-        "http://localhost:5500/api/student/unenroll",
+        `${API_BASE_URL}/api/student/unenroll`,
         { courseId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -116,7 +117,7 @@ const StudentDashboard = () => {
 
       // 1. Create order on backend
       const orderRes = await axios.post(
-        "http://localhost:5500/api/payment/create-order",
+        `${API_BASE_URL}/api/payment/create-order`,
         { courseId: course._id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -150,7 +151,7 @@ const StudentDashboard = () => {
         handler: async function (response) {
           try {
             const verifyRes = await axios.post(
-              "http://localhost:5500/api/payment/verify-payment",
+              `${API_BASE_URL}/api/payment/verify-payment`,
               {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
@@ -476,7 +477,7 @@ const StudentDashboard = () => {
                     <div>
                       {c.images?.[0] && (
                         <img
-                          src={`http://localhost:5500/uploads/${c.images[0]}`}
+                          src={`${API_BASE_URL}/uploads/${c.images[0]}`}
                           alt={c.title}
                           className="w-full h-44 object-cover rounded-xl mb-3"
                           onError={(e) => {
@@ -612,7 +613,7 @@ const StudentDashboard = () => {
                     <div>
                       {c.images?.[0] && (
                         <img
-                          src={`http://localhost:5500/uploads/${c.images[0]}`}
+                          src={`${API_BASE_URL}/uploads/${c.images[0]}`}
                           alt={c.title}
                           className="w-full h-44 object-cover rounded-xl mb-3"
                           onError={(e) => {
@@ -835,7 +836,7 @@ const StudentDashboard = () => {
                     <div>
                       {course.images?.[0] && (
                         <img
-                          src={`http://localhost:5500/uploads/${course.images[0]}`}
+                          src={`${API_BASE_URL}/uploads/${course.images[0]}`}
                           alt={course.title}
                           className="w-full h-44 object-cover rounded-xl mb-3"
                           onError={(e) => {

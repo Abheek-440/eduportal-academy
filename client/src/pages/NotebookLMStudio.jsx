@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config/apiConfig";
 import { useLocation } from "react-router-dom";
 import {
   FaQuestionCircle,
@@ -50,7 +51,7 @@ const NotebookLMStudio = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get("http://localhost:5500/api/courses");
+        const res = await axios.get(`${API_BASE_URL}/api/courses`);
         if (Array.isArray(res.data)) {
           setCourses(res.data);
           if (!selectedCourseId && res.data.length > 0) {
@@ -111,7 +112,7 @@ const NotebookLMStudio = () => {
         formData.append("document", uploadedFile);
         formData.append("difficulty", quizDifficulty);
         formData.append("numQuestions", quizNumQuestions);
-        res = await axios.post("http://localhost:5500/api/notebook/quiz", formData, {
+        res = await axios.post(`${API_BASE_URL}/api/notebook/quiz`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
@@ -125,7 +126,7 @@ const NotebookLMStudio = () => {
           difficulty: quizDifficulty,
           numQuestions: quizNumQuestions,
         };
-        res = await axios.post("http://localhost:5500/api/notebook/quiz", quizBody);
+        res = await axios.post(`${API_BASE_URL}/api/notebook/quiz`, quizBody);
       }
       setQuizData(res.data.data);
     } catch (err) {

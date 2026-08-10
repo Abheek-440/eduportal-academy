@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useSearchParams, Link } from "react-router-dom";
 import socket from "../socket";
+import { API_BASE_URL } from "../config/apiConfig";
 import {
   FaSearch,
   FaPaperPlane,
@@ -52,7 +53,7 @@ const Chatpage = () => {
   const fetchContacts = async () => {
     try {
       setLoadingContacts(true);
-      const res = await axios.get("http://localhost:5500/api/messages/contacts", {
+      const res = await axios.get(`${API_BASE_URL}/api/messages/contacts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setContacts(res.data);
@@ -82,7 +83,7 @@ const Chatpage = () => {
     try {
       setLoadingMessages(true);
       const res = await axios.get(
-        `http://localhost:5500/api/messages/${currentUser._id}/${contactId}`,
+        `${API_BASE_URL}/api/messages/${currentUser._id}/${contactId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setMessages(res.data);

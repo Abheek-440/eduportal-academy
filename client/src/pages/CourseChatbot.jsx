@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { FaRobot, FaUser, FaPaperPlane } from "react-icons/fa";
+import { API_BASE_URL } from "../config/apiConfig";
 
 const CourseChatbot = () => {
     const [input, setInput] = useState("");
@@ -31,7 +32,7 @@ const CourseChatbot = () => {
 
         try {
             const res = await axios.post(
-                "http://localhost:5500/api/chatbot/course-recommend",
+                `${API_BASE_URL}/api/chatbot/course-recommend`,
                 {
                     message: userText,
                 }

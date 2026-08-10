@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config/apiConfig';
 
 const API = axios.create({
-     baseURL:"http://localhost:5500/api/courses",
+     baseURL: `${API_BASE_URL}/api/courses`,
 });
 
 API.interceptors.request.use((config) => {

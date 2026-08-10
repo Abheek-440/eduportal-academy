@@ -9,6 +9,8 @@ import {
 } from "react-icons/fa";
 
 import axios from "axios";
+import { API_BASE_URL } from "../config/apiConfig";
+
 const LiveClasses = () => {
   const [classes, setClasses] = useState([]);
 
@@ -17,7 +19,7 @@ const LiveClasses = () => {
 
   const getClasses = async () => {
     try {
-      const res = await axios.get("http://localhost:5500/api/liveclasses",);
+      const res = await axios.get(`${API_BASE_URL}/api/liveclasses`);
       setClasses(res.data);
     } catch (error) {
       alert(error.response?.data?.message || "Fetch failed");
@@ -32,7 +34,7 @@ const LiveClasses = () => {
   const handleDeleteClass = async (id) => {
     if (!window.confirm("Are you sure you want to delete this live class link?")) return;
     try {
-      await axios.delete(`http://localhost:5500/api/liveclasses/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/liveclasses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Live class deleted successfully");

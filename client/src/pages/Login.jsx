@@ -1,6 +1,7 @@
 import React,{useState} from 'react'
 import axios from 'axios'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { API_BASE_URL } from '../config/apiConfig'
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:5500/api/auth/login",form);
+      const res = await axios.post(`${API_BASE_URL}/api/auth/login`,form);
       localStorage.setItem("token",res.data.token);
       localStorage.setItem("user",JSON.stringify(res.data.user));
       alert(res.data.message);

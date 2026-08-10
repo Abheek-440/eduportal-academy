@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config/apiConfig";
 import CourseForm from "../components/Courseform";
 import { useNavigate, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -69,7 +70,7 @@ const AddCourse = () => {
       images.forEach((img) => data.append("images", img));
 
       await axios.post(
-        "http://localhost:5500/api/courses",
+        `${API_BASE_URL}/api/courses`,
         data,
         {
           headers: {
