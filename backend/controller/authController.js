@@ -2,6 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const dns = require("dns");
 
 const sendOtpMail = async (email, otp) => {
   console.log(`========================================`);
@@ -21,7 +22,9 @@ const sendOtpMail = async (email, otp) => {
       port: 587,
       secure: false, // TLS
       requireTLS: true,
-      family: 4, // Force IPv4 resolution
+      lookup: (hostname, options, callback) => {
+        dns.lookup(hostname, { family: 4 }, callback);
+      },
       auth: {
         user: process.env.EMAIL_USER.trim(),
         pass: process.env.EMAIL_PASS.replace(/\s+/g, ""), // Remove any accidental spaces in App Password

@@ -6,9 +6,12 @@ const connectDB = require("./config/db");
 const http = require("http");
 const {Server} = require("socket.io");
 const sockethandeler = require("./socket/socket");
-
+const dns = require("dns");
 
 dotenv.config();
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder("ipv4first");
+}
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const app = express();

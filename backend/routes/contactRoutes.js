@@ -1,5 +1,6 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
+const dns = require("dns");
 const router = express.Router();
 
 router.post("/send", async (req, res) => {
@@ -20,7 +21,9 @@ router.post("/send", async (req, res) => {
       port: 587,
       secure: false,
       requireTLS: true,
-      family: 4,
+      lookup: (hostname, options, callback) => {
+        dns.lookup(hostname, { family: 4 }, callback);
+      },
       auth: {
         user: process.env.EMAIL_USER.trim(),
         pass: process.env.EMAIL_PASS.replace(/\s+/g, ""),
