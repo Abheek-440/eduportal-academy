@@ -17,18 +17,21 @@ const sendOtpMail = async (email, otp) => {
 
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // TLS
+      requireTLS: true,
+      family: 4, // Force IPv4 resolution
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.EMAIL_USER.trim(),
+        pass: process.env.EMAIL_PASS.replace(/\s+/g, ""), // Remove any accidental spaces in App Password
       },
-      connectionTimeout: 4000, // 4-second timeout to prevent hanging API requests
-      greetingTimeout: 4000,
-      socketTimeout: 4000,
+      connectionTimeout: 8000,
+      socketTimeout: 8000,
     });
 
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: `"EduPortal Academy" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "OTP Verification - EduPortal Academy",
       text: `Your OTP is ${otp}. It will expire in 5 minutes.`,
@@ -36,7 +39,9 @@ const sendOtpMail = async (email, otp) => {
     console.log(`✅ Email sent successfully to ${email}`);
   } catch (err) {
     console.error(`⚠️ Email delivery failed for ${email}:`, err.message);
-    // Don't throw error so registration API call completes instantly
+    if (err.message.includes("Invalid login") || err.message.includes("535")) {
+      console.error("💡 HINT: Check that EMAIL_USER matches the exact Gmail account that generated the 16-character App Password.");
+    }
   }
 };
 
