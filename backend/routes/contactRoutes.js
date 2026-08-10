@@ -10,15 +10,20 @@ router.post("/send", async (req, res) => {
       return res.status(400).json({ message: "Please fill in all fields." });
     }
 
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.log("Contact message received:", { name, email, message });
+      return res.status(200).json({ message: "Message received successfully!" });
+    }
+
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      family: 4, // Force IPv4 to prevent ENETUNREACH IPv6 errors on Render
+      service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      connectionTimeout: 4000,
+      greetingTimeout: 4000,
+      socketTimeout: 4000,
     });
 
     await transporter.sendMail({

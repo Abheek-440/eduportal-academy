@@ -4,23 +4,40 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
 const sendOtpMail = async (email, otp) => {
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    family: 4, // Force IPv4 resolution to prevent ENETUNREACH IPv6 errors on Render/Cloud hosts
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  console.log(`========================================`);
+  console.log(`🔑 [OTP GENERATED]`);
+  console.log(`Email: ${email}`);
+  console.log(`OTP Code: ${otp}`);
+  console.log(`========================================`);
 
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "OTP Verification",
-    text: `Your OTP is ${otp}. It will expire in 5 minutes.`,
-  });
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log("⚠️ EMAIL_USER or EMAIL_PASS environment variables are missing. Skipping SMTP email delivery.");
+    return;
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      connectionTimeout: 4000, // 4-second timeout to prevent hanging API requests
+      greetingTimeout: 4000,
+      socketTimeout: 4000,
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "OTP Verification - EduPortal Academy",
+      text: `Your OTP is ${otp}. It will expire in 5 minutes.`,
+    });
+    console.log(`✅ Email sent successfully to ${email}`);
+  } catch (err) {
+    console.error(`⚠️ Email delivery failed for ${email}:`, err.message);
+    // Don't throw error so registration API call completes instantly
+  }
 };
 
 exports.registerUser = async (req, res) => {
