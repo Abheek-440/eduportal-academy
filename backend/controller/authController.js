@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 
 const sendOtpMail = async (email, otp) => {
   console.log(`========================================`);
@@ -10,17 +10,23 @@ const sendOtpMail = async (email, otp) => {
   console.log(`OTP Code: ${otp}`);
   console.log(`========================================`);
 
-  if (!process.env.RESEND_API_KEY) {
-    console.log("⚠️ RESEND_API_KEY environment variable is missing. Skipping email delivery.");
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log("⚠️ EMAIL_USER or EMAIL_PASS environment variable is missing. Skipping email delivery.");
     return;
   }
 
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
-    const { data, error } = await resend.emails.send({
-      from: "EduPortal Academy <onboarding@resend.dev>",
-      to: [email],
+    const info = await transporter.sendMail({
+      from: `"EduPortal Academy" <${process.env.EMAIL_USER}>`,
+      to: email,
       subject: "OTP Verification - EduPortal Academy",
       html: `
         <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 500px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px;">
@@ -34,11 +40,7 @@ const sendOtpMail = async (email, otp) => {
       `,
     });
 
-    if (error) {
-      console.error(`⚠️ Email delivery failed for ${email}:`, error.message);
-    } else {
-      console.log(`✅ Email sent successfully to ${email} (ID: ${data.id})`);
-    }
+    console.log(`✅ Email sent successfully to ${email} (ID: ${info.messageId})`);
   } catch (err) {
     console.error(`⚠️ Email delivery failed for ${email}:`, err.message);
   }
