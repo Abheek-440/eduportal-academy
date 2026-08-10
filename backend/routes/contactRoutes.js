@@ -10,7 +10,10 @@ router.post("/send", async (req, res) => {
       return res.status(400).json({ message: "Please fill in all fields." });
     }
 
-    if (!process.env.BREVO_SMTP_USER || !process.env.BREVO_SMTP_PASS) {
+    const smtpUser = process.env.BREVO_SMTP_USER || process.env.EMAIL_USER;
+    const smtpPass = process.env.BREVO_SMTP_PASS || process.env.EMAIL_PASS;
+
+    if (!smtpUser || !smtpPass) {
       console.log("Contact message received (no BREVO_SMTP_USER/BREVO_SMTP_PASS):", { name, email, message });
       return res.status(200).json({ message: "Message received successfully!" });
     }
@@ -20,13 +23,13 @@ router.post("/send", async (req, res) => {
       port: 587,
       secure: false,
       auth: {
-        user: process.env.BREVO_SMTP_USER,
-        pass: process.env.BREVO_SMTP_PASS,
+        user: smtpUser,
+        pass: smtpPass,
       },
     });
 
     const info = await transporter.sendMail({
-      from: `"EduPortal Academy" <${process.env.BREVO_SMTP_USER}>`,
+      from: `"EduPortal Academy" <${smtpUser}>`,
       to: process.env.CONTACT_EMAIL || "sahilshaw2004002@gmail.com",
       replyTo: email,
       subject: `New Contact Us Message from ${name}`,

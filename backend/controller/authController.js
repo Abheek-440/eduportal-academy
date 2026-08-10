@@ -10,9 +10,13 @@ const sendOtpMail = async (email, otp) => {
   console.log(`OTP Code: ${otp}`);
   console.log(`========================================`);
 
-  if (!process.env.BREVO_SMTP_USER || !process.env.BREVO_SMTP_PASS) {
-    console.log("⚠️ BREVO_SMTP_USER or BREVO_SMTP_PASS environment variable is missing. Skipping email delivery.");
-    return;
+  const smtpUser = process.env.BREVO_SMTP_USER || process.env.EMAIL_USER;
+  const smtpPass = process.env.BREVO_SMTP_PASS || process.env.EMAIL_PASS;
+
+  if (!smtpUser || !smtpPass) {
+    const msg = "⚠️ Brevo SMTP credentials (BREVO_SMTP_USER & BREVO_SMTP_PASS) are missing in environment variables.";
+    console.error(msg);
+    throw new Error(msg);
   }
 
   try {
@@ -21,13 +25,13 @@ const sendOtpMail = async (email, otp) => {
       port: 587,
       secure: false,
       auth: {
-        user: process.env.BREVO_SMTP_USER,
-        pass: process.env.BREVO_SMTP_PASS,
+        user: smtpUser,
+        pass: smtpPass,
       },
     });
 
     const info = await transporter.sendMail({
-      from: `"EduPortal Academy" <${process.env.BREVO_SMTP_USER}>`,
+      from: `"EduPortal Academy" <${smtpUser}>`,
       to: email,
       subject: "OTP Verification - EduPortal Academy",
       html: `
@@ -43,8 +47,10 @@ const sendOtpMail = async (email, otp) => {
     });
 
     console.log(`✅ Email sent successfully to ${email} (ID: ${info.messageId})`);
+    return info;
   } catch (err) {
     console.error(`⚠️ Email delivery failed for ${email}:`, err.message);
+    throw err;
   }
 };
 
