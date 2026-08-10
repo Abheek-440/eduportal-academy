@@ -10,21 +10,23 @@ router.post("/send", async (req, res) => {
       return res.status(400).json({ message: "Please fill in all fields." });
     }
 
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.log("Contact message received (no EMAIL_USER/EMAIL_PASS):", { name, email, message });
+    if (!process.env.BREVO_SMTP_USER || !process.env.BREVO_SMTP_PASS) {
+      console.log("Contact message received (no BREVO_SMTP_USER/BREVO_SMTP_PASS):", { name, email, message });
       return res.status(200).json({ message: "Message received successfully!" });
     }
 
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp-relay.brevo.com",
+      port: 587,
+      secure: false,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.BREVO_SMTP_USER,
+        pass: process.env.BREVO_SMTP_PASS,
       },
     });
 
     const info = await transporter.sendMail({
-      from: `"EduPortal Academy" <${process.env.EMAIL_USER}>`,
+      from: `"EduPortal Academy" <${process.env.BREVO_SMTP_USER}>`,
       to: process.env.CONTACT_EMAIL || "sahilshaw2004002@gmail.com",
       replyTo: email,
       subject: `New Contact Us Message from ${name}`,

@@ -10,22 +10,24 @@ const sendOtpMail = async (email, otp) => {
   console.log(`OTP Code: ${otp}`);
   console.log(`========================================`);
 
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.log("⚠️ EMAIL_USER or EMAIL_PASS environment variable is missing. Skipping email delivery.");
+  if (!process.env.BREVO_SMTP_USER || !process.env.BREVO_SMTP_PASS) {
+    console.log("⚠️ BREVO_SMTP_USER or BREVO_SMTP_PASS environment variable is missing. Skipping email delivery.");
     return;
   }
 
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp-relay.brevo.com",
+      port: 587,
+      secure: false,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.BREVO_SMTP_USER,
+        pass: process.env.BREVO_SMTP_PASS,
       },
     });
 
     const info = await transporter.sendMail({
-      from: `"EduPortal Academy" <${process.env.EMAIL_USER}>`,
+      from: `"EduPortal Academy" <${process.env.BREVO_SMTP_USER}>`,
       to: email,
       subject: "OTP Verification - EduPortal Academy",
       html: `
