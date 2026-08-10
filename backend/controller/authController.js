@@ -5,7 +5,10 @@ const nodemailer = require("nodemailer");
 
 const sendOtpMail = async (email, otp) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    family: 4, // Force IPv4 resolution to prevent ENETUNREACH IPv6 errors on Render/Cloud hosts
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
