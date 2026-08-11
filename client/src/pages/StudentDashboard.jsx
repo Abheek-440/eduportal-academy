@@ -476,14 +476,16 @@ const StudentDashboard = () => {
                   >
                     <div>
                       {c.images?.[0] && (
-                        <img
-                          src={`${API_BASE_URL}/uploads/${c.images[0]}`}
-                          alt={c.title}
-                          className="w-full h-44 object-cover rounded-xl mb-3"
-                          onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/400x200?text=Course+Image";
-                          }}
-                        />
+                        <div className="w-full h-44 bg-slate-950/80 rounded-xl mb-3 overflow-hidden flex items-center justify-center border border-sky-500/20">
+                          <img
+                            src={`${API_BASE_URL}/uploads/${c.images[0]}`}
+                            alt={c.title}
+                            className="max-h-full max-w-full object-contain"
+                            onError={(e) => {
+                              e.target.src = "https://via.placeholder.com/400x200?text=Course+Image";
+                            }}
+                          />
+                        </div>
                       )}
                       <div className="flex justify-between items-start mb-2">
                         <span className="text-xs bg-sky-950 text-sky-300 px-3 py-1 rounded-full font-semibold border border-sky-500/30">
@@ -612,14 +614,16 @@ const StudentDashboard = () => {
                   >
                     <div>
                       {c.images?.[0] && (
-                        <img
-                          src={`${API_BASE_URL}/uploads/${c.images[0]}`}
-                          alt={c.title}
-                          className="w-full h-44 object-cover rounded-xl mb-3"
-                          onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/400x200?text=Course+Image";
-                          }}
-                        />
+                        <div className="w-full h-44 bg-slate-950/80 rounded-xl mb-3 overflow-hidden flex items-center justify-center border border-emerald-500/20">
+                          <img
+                            src={`${API_BASE_URL}/uploads/${c.images[0]}`}
+                            alt={c.title}
+                            className="max-h-full max-w-full object-contain"
+                            onError={(e) => {
+                              e.target.src = "https://via.placeholder.com/400x200?text=Course+Image";
+                            }}
+                          />
+                        </div>
                       )}
                       <div className="flex justify-between items-start mb-2">
                         <span className="text-xs bg-emerald-950 text-emerald-300 px-3 py-1 rounded-full font-semibold border border-emerald-500/30">
@@ -835,14 +839,16 @@ const StudentDashboard = () => {
                   >
                     <div>
                       {course.images?.[0] && (
-                        <img
-                          src={`${API_BASE_URL}/uploads/${course.images[0]}`}
-                          alt={course.title}
-                          className="w-full h-44 object-cover rounded-xl mb-3"
-                          onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/400x200?text=Course+Image";
-                          }}
-                        />
+                        <div className="w-full h-44 bg-slate-950/80 rounded-xl mb-3 overflow-hidden flex items-center justify-center border border-purple-500/20">
+                          <img
+                            src={`${API_BASE_URL}/uploads/${course.images[0]}`}
+                            alt={course.title}
+                            className="max-h-full max-w-full object-contain"
+                            onError={(e) => {
+                              e.target.src = "https://via.placeholder.com/400x200?text=Course+Image";
+                            }}
+                          />
+                        </div>
                       )}
                       <div className="flex justify-between items-start mb-2">
                         <span className="text-xs bg-purple-950 text-purple-300 px-3 py-1 rounded-full font-semibold border border-purple-500/30">

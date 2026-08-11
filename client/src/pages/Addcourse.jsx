@@ -132,11 +132,16 @@ const AddCourse = () => {
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {previewImages.map((src, index) => (
-                  <img
+                  <div
                     key={index}
-                    src={src}
-                    className="w-full h-32 object-cover rounded-lg border shadow"
-                  />
+                    className="w-full h-32 bg-slate-950/80 rounded-lg border border-cyan-500/30 overflow-hidden flex items-center justify-center p-1 shadow"
+                  >
+                    <img
+                      src={src}
+                      alt={`Preview ${index}`}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
                 ))}
               </div>
             </div>

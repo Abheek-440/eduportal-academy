@@ -10,7 +10,7 @@ const About = () => {
         <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-sky-400 mb-6">About</h1>
 
         <p className="text-xl leading-8 text-slate-200">
-          E-LEARN is a modern online learning platform designed to provide
+          Eduportal Academy is a modern online learning platform designed to provide
           students with high-quality educational resources, live classes,
           interactive courses, and AI-powered assistance.
         </p>

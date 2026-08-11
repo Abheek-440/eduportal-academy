@@ -172,18 +172,20 @@ const SingleCourse = () => {
           {/* LEFT: IMAGE SECTION */}
           <div>
             {/* Main Image */}
-            <img
-              src={
-                course.images?.[activeImage]
-                  ? `${API_BASE_URL}/uploads/${course.images[activeImage]}`
-                  : "https://via.placeholder.com/600x400?text=No+Image+Available"
-              }
-              onError={(e) => {
-                e.target.src = "https://via.placeholder.com/600x400?text=Image+Not+Found";
-              }}
-              alt="course"
-              className="w-full h-80 object-cover rounded-2xl shadow-md mb-4 border border-cyan-500/20"
-            />
+            <div className="w-full h-80 bg-slate-950/80 rounded-2xl shadow-md mb-4 border border-cyan-500/20 overflow-hidden flex items-center justify-center">
+              <img
+                src={
+                  course.images?.[activeImage]
+                    ? `${API_BASE_URL}/uploads/${course.images[activeImage]}`
+                    : "https://via.placeholder.com/600x400?text=No+Image+Available"
+                }
+                onError={(e) => {
+                  e.target.src = "https://via.placeholder.com/600x400?text=Image+Not+Found";
+                }}
+                alt="course"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
 
             {/* Thumbnails */}
             {course.images?.length > 1 && (
@@ -193,7 +195,7 @@ const SingleCourse = () => {
                     key={index}
                     src={`${API_BASE_URL}/uploads/${img}`}
                     onClick={() => setActiveImage(index)}
-                    className={`w-20 h-20 object-cover rounded-lg cursor-pointer border-2 transition 
+                    className={`w-20 h-20 object-contain bg-slate-950/80 p-1 rounded-lg cursor-pointer border-2 transition 
                       ${
                         activeImage === index
                           ? "border-cyan-400"

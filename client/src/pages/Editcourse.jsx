@@ -125,12 +125,13 @@ const EditCourse = () => {
           <h3 className="font-bold mb-2">New Images</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {previewImages.map((img, index) => (
-              <img
-                key={index}
-                src={img}
-                alt="preview"
-                className="w-full h-32 object-cover rounded-lg border"
-              />
+              <div key={index} className="w-full h-32 bg-slate-950/80 rounded-lg border border-cyan-500/30 overflow-hidden flex items-center justify-center p-1">
+                <img
+                  src={img}
+                  alt="preview"
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -140,12 +141,13 @@ const EditCourse = () => {
             <h3 className="font-bold mb-2">Old Images</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {oldImages.map((img, index) => (
-                <img
-                  key={index}
-                  src={`${API_BASE_URL}/uploads/${img}`}
-                  alt="old"
-                  className="w-full h-32 object-cover rounded-lg border"
-                />
+                <div key={index} className="w-full h-32 bg-slate-950/80 rounded-lg border border-cyan-500/30 overflow-hidden flex items-center justify-center p-1">
+                  <img
+                    src={`${API_BASE_URL}/uploads/${img}`}
+                    alt="old"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
               ))}
             </div>
           </div>

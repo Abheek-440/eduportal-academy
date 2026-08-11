@@ -378,14 +378,16 @@ const InstructorDashboard = () => {
                 >
                   <div>
                     {course.images?.[0] && (
-                      <img
-                        src={`${API_BASE_URL}/uploads/${course.images[0]}`}
-                        alt={course.title}
-                        className="w-full h-44 object-cover rounded-xl mb-3"
-                        onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/400x200?text=Course+Thumbnail";
-                        }}
-                      />
+                      <div className="w-full h-44 bg-slate-950/80 rounded-xl mb-3 overflow-hidden flex items-center justify-center border border-purple-500/20">
+                        <img
+                          src={`${API_BASE_URL}/uploads/${course.images[0]}`}
+                          alt={course.title}
+                          className="max-h-full max-w-full object-contain"
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/400x200?text=Course+Thumbnail";
+                          }}
+                        />
+                      </div>
                     )}
                     <div className="flex justify-between items-start mb-2">
                       <span className="text-xs bg-purple-950 text-purple-300 px-3 py-1 rounded-full font-semibold border border-purple-500/30">
