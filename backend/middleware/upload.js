@@ -4,20 +4,33 @@ const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-// Configure Cloudinary if credentials exist in process.env
-const isCloudinaryConfigured = !!(
-  process.env.CLOUDINARY_CLOUD_NAME &&
-  process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_SECRET
-);
+// Helper to check if valid Cloudinary credentials are set (not empty and not default placeholders)
+const getCloudinaryConfig = () => {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
+  if (
+    cloudName &&
+    apiKey &&
+    apiSecret &&
+    !cloudName.includes("your_") &&
+    !apiKey.includes("your_") &&
+    !apiSecret.includes("your_")
+  ) {
+    return { cloudName, apiKey, apiSecret };
+  }
+  return null;
+};
+
+const cloudConfig = getCloudinaryConfig();
 let storage;
 
-if (isCloudinaryConfigured) {
+if (cloudConfig) {
   cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: cloudConfig.cloudName,
+    api_key: cloudConfig.apiKey,
+    api_secret: cloudConfig.apiSecret,
   });
 
   storage = new CloudinaryStorage({
@@ -27,6 +40,7 @@ if (isCloudinaryConfigured) {
       allowed_formats: ["jpg", "jpeg", "png", "webp", "gif", "svg"],
     },
   });
+  console.log(`[Upload Middleware] ☁️ Cloudinary Storage configured & active for cloud: ${cloudConfig.cloudName}`);
 } else {
   const uploadDir = "uploads/";
   if (!fs.existsSync(uploadDir)) {
@@ -46,6 +60,7 @@ if (isCloudinaryConfigured) {
       cb(null, uniquename);
     },
   });
+  console.log("[Upload Middleware] 📁 Using Local Disk Storage (Cloudinary env vars missing or placeholders)");
 }
 
 const filefilter = (req, file, cb) => {

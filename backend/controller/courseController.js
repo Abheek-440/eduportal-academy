@@ -92,7 +92,7 @@ exports.updateCourse = async (req, res) => {
         description: req.body.description,
         images,
       },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     res.status(200).json({
