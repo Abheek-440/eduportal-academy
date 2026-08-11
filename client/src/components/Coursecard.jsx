@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { API_BASE_URL } from "../config/apiConfig";
+import { getImageUrl, handleImageError } from "../utils/imageUtils";
 
 const CourseCard = ({ course, onDelete }) => {
   const [activeImage, setActiveImage] = useState(0);
@@ -13,14 +13,9 @@ const CourseCard = ({ course, onDelete }) => {
       {/* Image */}
       <div className="relative bg-slate-950/80 w-full h-52 overflow-hidden flex items-center justify-center">
         <img
-          src={
-            course.images?.[activeImage]
-              ? `${API_BASE_URL}/uploads/${course.images[activeImage]}`
-              : "https://via.placeholder.com/400x200?text=No+Image+Available"
-          }
-          onError={(e) => {
-            e.target.src = "https://via.placeholder.com/400x200?text=Image+Not+Found";
-          }}
+          src={getImageUrl(course.images?.[activeImage])}
+          onError={handleImageError}
+          alt={course.title || "Course image"}
           className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
         />
 
@@ -35,7 +30,8 @@ const CourseCard = ({ course, onDelete }) => {
           {course.images.map((img, i) => (
             <img
               key={i}
-              src={`${API_BASE_URL}/uploads/${img}`}
+              src={getImageUrl(img)}
+              onError={handleImageError}
               onMouseEnter={() => setActiveImage(i)}
               className={`w-14 h-14 rounded-md object-contain bg-slate-950 p-0.5 cursor-pointer border 
               ${activeImage === i ? "border-cyan-400" : "border-white/10"}`}

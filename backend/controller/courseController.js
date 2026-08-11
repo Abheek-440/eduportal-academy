@@ -9,7 +9,13 @@ exports.addCourse = async (req, res) => {
       return res.status(400).json({ message: "All course fields are required" });
     }
 
-    const images = req.files ? req.files.map((file) => file.filename) : [];
+    const images = req.files
+      ? req.files.map((file) =>
+          file.path && (file.path.startsWith("http://") || file.path.startsWith("https://"))
+            ? file.path
+            : file.filename
+        )
+      : [];
 
     const course = await Course.create({
       title,
@@ -68,7 +74,11 @@ exports.updateCourse = async (req, res) => {
     let images = oldCourse.images;
 
     if (req.files && req.files.length > 0) {
-      images = req.files.map((file) => file.filename);
+      images = req.files.map((file) =>
+        file.path && (file.path.startsWith("http://") || file.path.startsWith("https://"))
+          ? file.path
+          : file.filename
+      );
     }
 
     const updatedCourse = await Course.findByIdAndUpdate(

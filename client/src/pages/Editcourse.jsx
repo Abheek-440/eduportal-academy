@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/courseApi";
 import { API_BASE_URL } from "../config/apiConfig";
+import { getImageUrl, handleImageError } from "../utils/imageUtils";
 import CourseForm from "../components/Courseform";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -143,7 +144,8 @@ const EditCourse = () => {
               {oldImages.map((img, index) => (
                 <div key={index} className="w-full h-32 bg-slate-950/80 rounded-lg border border-cyan-500/30 overflow-hidden flex items-center justify-center p-1">
                   <img
-                    src={`${API_BASE_URL}/uploads/${img}`}
+                    src={getImageUrl(img)}
+                    onError={handleImageError}
                     alt="old"
                     className="max-w-full max-h-full object-contain"
                   />

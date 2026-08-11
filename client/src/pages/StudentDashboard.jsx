@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../config/apiConfig";
+import { getImageUrl, handleImageError } from "../utils/imageUtils";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaBookOpen,
@@ -478,12 +479,10 @@ const StudentDashboard = () => {
                       {c.images?.[0] && (
                         <div className="w-full h-44 bg-slate-950/80 rounded-xl mb-3 overflow-hidden flex items-center justify-center border border-sky-500/20">
                           <img
-                            src={`${API_BASE_URL}/uploads/${c.images[0]}`}
+                            src={getImageUrl(c.images[0])}
                             alt={c.title}
                             className="max-h-full max-w-full object-contain"
-                            onError={(e) => {
-                              e.target.src = "https://via.placeholder.com/400x200?text=Course+Image";
-                            }}
+                            onError={handleImageError}
                           />
                         </div>
                       )}
@@ -616,12 +615,10 @@ const StudentDashboard = () => {
                       {c.images?.[0] && (
                         <div className="w-full h-44 bg-slate-950/80 rounded-xl mb-3 overflow-hidden flex items-center justify-center border border-emerald-500/20">
                           <img
-                            src={`${API_BASE_URL}/uploads/${c.images[0]}`}
+                            src={getImageUrl(c.images[0])}
                             alt={c.title}
                             className="max-h-full max-w-full object-contain"
-                            onError={(e) => {
-                              e.target.src = "https://via.placeholder.com/400x200?text=Course+Image";
-                            }}
+                            onError={handleImageError}
                           />
                         </div>
                       )}
@@ -841,12 +838,10 @@ const StudentDashboard = () => {
                       {course.images?.[0] && (
                         <div className="w-full h-44 bg-slate-950/80 rounded-xl mb-3 overflow-hidden flex items-center justify-center border border-purple-500/20">
                           <img
-                            src={`${API_BASE_URL}/uploads/${course.images[0]}`}
+                            src={getImageUrl(course.images[0])}
                             alt={course.title}
                             className="max-h-full max-w-full object-contain"
-                            onError={(e) => {
-                              e.target.src = "https://via.placeholder.com/400x200?text=Course+Image";
-                            }}
+                            onError={handleImageError}
                           />
                         </div>
                       )}

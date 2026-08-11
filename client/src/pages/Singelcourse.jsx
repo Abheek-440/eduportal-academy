@@ -5,6 +5,7 @@ import { FaArrowLeft, FaCreditCard, FaLock, FaCheckCircle } from "react-icons/fa
 import { loadRazorpayScript } from "../utils/loadRazorpay";
 import axios from "axios";
 import { API_BASE_URL } from "../config/apiConfig";
+import { getImageUrl, handleImageError } from "../utils/imageUtils";
 
 const SingleCourse = () => {
   const { id } = useParams();
@@ -174,15 +175,9 @@ const SingleCourse = () => {
             {/* Main Image */}
             <div className="w-full h-80 bg-slate-950/80 rounded-2xl shadow-md mb-4 border border-cyan-500/20 overflow-hidden flex items-center justify-center">
               <img
-                src={
-                  course.images?.[activeImage]
-                    ? `${API_BASE_URL}/uploads/${course.images[activeImage]}`
-                    : "https://via.placeholder.com/600x400?text=No+Image+Available"
-                }
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/600x400?text=Image+Not+Found";
-                }}
-                alt="course"
+                src={getImageUrl(course.images?.[activeImage])}
+                onError={handleImageError}
+                alt={course.title || "course"}
                 className="max-w-full max-h-full object-contain"
               />
             </div>
@@ -193,7 +188,8 @@ const SingleCourse = () => {
                 {course.images.map((img, index) => (
                   <img
                     key={index}
-                    src={`${API_BASE_URL}/uploads/${img}`}
+                    src={getImageUrl(img)}
+                    onError={handleImageError}
                     onClick={() => setActiveImage(index)}
                     className={`w-20 h-20 object-contain bg-slate-950/80 p-1 rounded-lg cursor-pointer border-2 transition 
                       ${
