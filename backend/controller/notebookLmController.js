@@ -65,9 +65,15 @@ const cleanJsonResponse = (content) => {
 // 1. Generate Interactive Quiz
 
 exports.generateQuiz = async (req, res) => {
-  const groq = new Groq({
-    apiKey: (process.env.GROQ_API_KEY || "").trim(),
-  });
+  const apiKey = (process.env.GROQ_API_KEY || "").trim();
+  if (!apiKey) {
+    return res.status(500).json({
+      success: false,
+      message: "GROQ_API_KEY is missing from backend environment variables. Please add GROQ_API_KEY to backend/.env file.",
+    });
+  }
+
+  const groq = new Groq({ apiKey });
 
   try {
     const sourceText = await extractSourceText(req);
@@ -76,6 +82,7 @@ exports.generateQuiz = async (req, res) => {
 
     if (!sourceText) {
       return res.status(400).json({
+        success: false,
         message: "No content provided. Please upload a file, select a course, or enter study notes.",
       });
     }
@@ -104,15 +111,53 @@ Return JSON in this EXACT structure with no extra text:
 }
 `;
 
-    const aiRes = await groq.chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: `Source Content:\n${sourceText.slice(0, 8000)}` },
-      ],
-      temperature: 0.7,
-    });
+    const candidateModels = [
+      "groq/compound-mini",
+      "groq/compound",
+      "openai/gpt-oss-20b",
+      "openai/gpt-oss-120b",
+      "qwen/qwen3.6-27b",
+      "llama-3.3-70b-versatile",
+      "llama-3.1-8b-instant"
+    ];
+
+    let aiRes = null;
+    let lastError = null;
+
+    for (const model of candidateModels) {
+      try {
+        try {
+          aiRes = await groq.chat.completions.create({
+            model,
+            response_format: { type: "json_object" },
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: `Source Content:\n${sourceText.slice(0, 8000)}` },
+            ],
+            temperature: 0.7,
+          });
+        } catch (jsonFormatErr) {
+          aiRes = await groq.chat.completions.create({
+            model,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: `Source Content:\n${sourceText.slice(0, 8000)}` },
+            ],
+            temperature: 0.7,
+          });
+        }
+        if (aiRes && aiRes.choices && aiRes.choices[0]?.message?.content) {
+          break;
+        }
+      } catch (err) {
+        console.warn(`Groq model '${model}' failed: ${err.message}. Trying next candidate...`);
+        lastError = err;
+      }
+    }
+
+    if (!aiRes) {
+      throw lastError || new Error("All Groq AI candidate models failed to generate response.");
+    }
 
     const parsedData = cleanJsonResponse(aiRes.choices[0].message.content);
 

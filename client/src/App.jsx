@@ -223,6 +223,11 @@ const AnimatedRoutes = () => {
             <Route path="/ats-analyzer" element={<Atsanalyzer />} />
             <Route path="/notebook-lm" element={<NotebookLMStudio />} />
             <Route path="/ai-features" element={<AIFeatures />} />
+            <Route path="/quiz" element={<AIFeatures />} />
+            <Route path="/ai-quiz" element={<AIFeatures />} />
+            <Route path="/ai-quizzes" element={<AIFeatures />} />
+            <Route path="/quizzes" element={<AIFeatures />} />
+            <Route path="/quiz-ai" element={<AIFeatures />} />
 
             <Route path="/add-course" element={<AddCourse />} />
             <Route path="/edit-course/:id" element={<EditCourse />} />

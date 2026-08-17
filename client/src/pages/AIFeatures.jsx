@@ -34,19 +34,24 @@ const AI_FEATURES = [
   }
 ];
 
+const normalizeFeature = (param) => {
+  if (!param) return "notebooklm";
+  const lower = param.toLowerCase();
+  if (lower === "quiz" || lower === "ai-quiz" || lower === "quizzes" || lower === "quiz-ai") {
+    return "notebooklm";
+  }
+  return AI_FEATURES.some((f) => f.id === lower) ? lower : "notebooklm";
+};
+
 const AIFeatures = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const initialFeature = searchParams.get("feature") || "notebooklm";
-  const [selectedFeature, setSelectedFeature] = useState(
-    AI_FEATURES.some((f) => f.id === initialFeature) ? initialFeature : "notebooklm"
-  );
+  const initialFeature = normalizeFeature(searchParams.get("feature"));
+  const [selectedFeature, setSelectedFeature] = useState(initialFeature);
 
   useEffect(() => {
     const featureParam = searchParams.get("feature");
-    if (featureParam && AI_FEATURES.some((f) => f.id === featureParam)) {
-      setSelectedFeature(featureParam);
-    }
+    setSelectedFeature(normalizeFeature(featureParam));
   }, [searchParams]);
 
   const handleSelectFeature = (featureId) => {

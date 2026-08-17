@@ -41,6 +41,24 @@ const upload = multer({
   limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
 });
 
+// Status route for GET verification
+const statusHandler = (req, res) => {
+  res.json({
+    success: true,
+    message: "Quiz AI service API is active. Send a POST request to generate a quiz.",
+    endpoints: ["POST /api/notebook/quiz", "POST /api/quiz", "POST /api/quizzes"]
+  });
+};
+
+router.get("/", statusHandler);
+router.get("/quiz", statusHandler);
+router.get("/quizzes", statusHandler);
+router.get("/generate", statusHandler);
+
+// POST Quiz generation routes (supporting multiple path variations)
+router.post("/", upload.single("document"), generateQuiz);
 router.post("/quiz", upload.single("document"), generateQuiz);
+router.post("/quizzes", upload.single("document"), generateQuiz);
+router.post("/generate", upload.single("document"), generateQuiz);
 
 module.exports = router;

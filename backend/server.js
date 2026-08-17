@@ -52,6 +52,8 @@ app.use("/api/chatbot", require("./routes/chatboatRoutes"));
 app.use("/api/ats", require("./routes/atsRoutes"));
 app.use("/api/contact", require("./routes/contactRoutes"));
 app.use("/api/notebook", require("./routes/notebookLmRoutes"));
+app.use("/api/quiz", require("./routes/notebookLmRoutes"));
+app.use("/api/quizzes", require("./routes/notebookLmRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 
 

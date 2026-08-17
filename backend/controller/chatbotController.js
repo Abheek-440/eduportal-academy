@@ -27,28 +27,51 @@ exports.coursechatbot = async (req,res)=>{
     })
     .join("\n");
 
-    const response = await groq.chat.completions.create({
-        model:"llama-3.1-8b-instant",
-        messages:[
-            {
-                role:"system",
-                content:`
-                available courses:
-                ${courseList}
-                `,
+    const candidateModels = [
+      "groq/compound-mini",
+      "groq/compound",
+      "openai/gpt-oss-20b",
+      "openai/gpt-oss-120b",
+      "qwen/qwen3.6-27b",
+      "llama-3.3-70b-versatile",
+      "llama-3.1-8b-instant"
+    ];
+    let response = null;
+    let lastError = null;
 
+    for (const model of candidateModels) {
+      try {
+        response = await groq.chat.completions.create({
+          model,
+          messages: [
+            {
+              role: "system",
+              content: `available courses:\n${courseList}`,
             },
             {
-                role:"user",
-                content:message,
+              role: "user",
+              content: message,
             },
-        ],
-    });
-    res.json({
-        reply:response.choices[0].message.content,
-    });
-        
-    } catch(err){
-        console.error(err);
+          ],
+        });
+        if (response && response.choices && response.choices[0]?.message?.content) break;
+      } catch (e) {
+        console.warn(`Groq chatbot model '${model}' failed: ${e.message}`);
+        lastError = e;
+      }
     }
+
+    if (!response) {
+      return res.status(500).json({
+        reply: "Failed to generate AI response: " + (lastError?.message || "Service unavailable"),
+      });
+    }
+
+    res.json({
+      reply: response.choices[0].message.content,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ reply: "Internal server error" });
+  }
 };

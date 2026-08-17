@@ -44,12 +44,19 @@ exports.analyzeResume = async (req, res) => {
       });
     }
 
-    const aiRes = await groq.chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      messages: [
-        {
-          role: "system",
-          content: `
+    const candidateModels = [
+      "groq/compound-mini",
+      "groq/compound",
+      "openai/gpt-oss-20b",
+      "openai/gpt-oss-120b",
+      "qwen/qwen3.6-27b",
+      "llama-3.3-70b-versatile",
+      "llama-3.1-8b-instant"
+    ];
+    let aiRes = null;
+    let lastError = null;
+
+    const systemPromptContent = `
 You are an intelligent AI Document & ATS Resume Analyzer.
 Analyze the uploaded document (which can be a resume, admit card, academic paper, report, assignment, certificate, or study guide) and return a clear, comprehensive analysis report.
 
@@ -73,15 +80,27 @@ Improvement & Actionable Suggestions:
 - Suggestion 2
 
 Best Job Role / Document Category:
-- Role or category name
-          `,
-        },
-        {
-          role: "user",
-          content: `Document Content (${req.file.originalname}):\n\n${resumeText.slice(0, 10000)}`,
-        },
-      ],
-    });
+- Role or category name`;
+
+    for (const model of candidateModels) {
+      try {
+        aiRes = await groq.chat.completions.create({
+          model,
+          messages: [
+            { role: "system", content: systemPromptContent },
+            { role: "user", content: `Document Content (${req.file.originalname}):\n\n${resumeText.slice(0, 10000)}` },
+          ],
+        });
+        if (aiRes && aiRes.choices && aiRes.choices[0]?.message?.content) break;
+      } catch (err) {
+        console.warn(`Groq model '${model}' failed in ATS analyzer: ${err.message}`);
+        lastError = err;
+      }
+    }
+
+    if (!aiRes) {
+      throw lastError || new Error("All candidate AI models failed to process document.");
+    }
 
     res.json({
       message: "Document analyzed successfully",
